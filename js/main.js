@@ -149,47 +149,14 @@ const questionBank = [
 const resultProfiles = {
   ad: {
     title: "你现阶段更适合：先直接把找客户这件事跑起来",
-    summary: "结合你的回答，你现阶段更适合先用更直接的方式测试线索效果，把第一波客户跑起来。",
-    traits: [
-      "你当前更看重启动速度和结果反馈",
-      "相比先搭很重的经营动作，你更适合先验证效果",
-      "先把找客户这件事跑顺，再决定要不要继续放大"
-    ],
-    actions: [
-      "先明确目标客户、咨询入口和承接方式",
-      "优先测试更直接的投放动作，看看线索和咨询情况",
-      "跑出有效反馈后，再优化投入节奏和后续打法"
-    ],
     schemeLabel: "纯广告投放方案"
   },
   agency: {
     title: "你现阶段更适合：先借助专业团队，把找客户这件事做起来",
-    summary: "结合你的回答，你更适合先把复杂动作交给专业团队推进，自己重点看结果和后续承接。",
-    traits: [
-      "你更在意省心、省力和推进效率",
-      "当前时间或精力更适合放在经营和跟进上",
-      "先由专业团队帮你把线索跑起来，会更顺手"
-    ],
-    actions: [
-      "先确定线索目标和可接受的推进方式",
-      "优先选择成熟团队代投，减少前期试错成本",
-      "把精力放在销售跟进和后续承接上"
-    ],
     schemeLabel: "第三方线索代投方案"
   },
   content: {
     title: "你现阶段更适合：先把内容和经营基础做起来，再慢慢放大",
-    summary: "结合你的回答，你目前已有一定内容基础或经营条件，更适合把内容经营和流量放大配合起来。",
-    traits: [
-      "你不只关心眼前结果，目前也具备一定内容基础",
-      "能够接受内容、经营和推广一起推进",
-      "更适合边积累边放大，逐步形成稳定打法"
-    ],
-    actions: [
-      "先把内容主题、客户承接和经营基础搭起来",
-      "用轻量内容测试吸引客户的方向",
-      "基础跑顺后，再配合投流逐步放大效果"
-    ],
     schemeLabel: "内容加热 + 投流方案"
   }
 };
@@ -346,6 +313,129 @@ function computeMatchScore(type) {
   return Math.min(base + scoreBoost + businessBoost + storeBoost, 96);
 }
 
+function buildResultSummary(type) {
+  const summaries = {
+    ad: "这次更偏向这条路，不是因为你只能做短期动作，而是你当前更像处在“先验证、先起量”的阶段。与其一上来把动作做重，不如先把有效咨询和线索跑出来，再决定后面怎么放大。",
+    agency: "这次更偏向借助团队，不是因为你不能做，而是你当前更需要解决“谁来稳定推进”这个问题。要是执行长期挂在自己或内部团队身上，很多动作容易停在半路。",
+    content: "这次更偏向内容和经营基础，不是单纯建议你慢慢来，而是从整体回答看，你的问题已经不只是缺一波线索，更关键的是把吸引客户、承接客户和后续放大串成一条线。"
+  };
+
+  return summaries[type];
+}
+
+function buildBusinessInsight() {
+  if (state.answers.business === "online") {
+    return "你现在更适合先把线上咨询入口和后续承接跑顺，避免流量来了却接不住。";
+  }
+
+  if (state.answers.business === "offline") {
+    if (state.answers.stores === "single") {
+      return "你现在更像单店经营阶段，动作越清楚、越容易持续执行，比一开始铺太多更重要。";
+    }
+
+    if (state.answers.stores === "small") {
+      return "你目前已经不是单点试水，判断时会更看重动作能不能复制到几家门店一起跑。";
+    }
+
+    return "你现在门店不算少，判断时不只看短期线索，还会看后面能不能稳定放大。";
+  }
+
+  if (state.answers.business === "mixed") {
+    return "你不是单一场景，判断时会更看重线上线下能不能一起承接，而不是只看某一个点的效果。";
+  }
+
+  return "";
+}
+
+function buildAnalysisList(type) {
+  const businessInsight = buildBusinessInsight();
+
+  if (type === "ad") {
+    return [
+      "你当前更像处在先验证能不能跑起来的阶段，启动速度比完整打法更重要。",
+      state.answers.contentState === "a"
+        ? "以你现在的内容基础，如果一上来把重心放在长期内容经营上，见效会慢，也容易把动作做散。"
+        : state.answers.contentState === "b"
+          ? "你不是完全没有基础，但还没到适合把整套经营链路做重的阶段，先把有效入口跑出来会更稳。"
+          : "虽然你已有一定基础，但从整体回答看，你眼下更优先的还是先验证线索和转化效率。",
+      state.answers.concern === "a"
+        ? "你现在的现实压力更偏向尽快看到第一批反馈，所以判断会更偏向先起量、再优化。"
+        : state.answers.concern === "b"
+          ? "就算你也在意省力，现阶段更关键的还是先把动作做轻、把反馈跑出来，而不是同时铺太多事。"
+          : "如果你最卡的是链路没串起来，先有一条能快速验证的入口，反而更容易看清后面该补哪里。",
+      businessInsight
+    ].filter(Boolean).slice(0, 3);
+  }
+
+  if (type === "agency") {
+    return [
+      "这次更偏向团队方案，核心不是你想不想做，而是当前自己硬扛执行，推进很容易断。",
+      state.answers.contentState === "a"
+        ? "现在内容基础和内部执行都还不稳定，借助成熟团队会比自己从零摸索更现实。"
+        : state.answers.contentState === "b"
+          ? "你不是完全没有基础，但内部节奏还没稳住，这时候先让专业团队把动作带起来更合适。"
+          : "即便有一定基础，如果内部没有稳定推进机制，很多动作最后还是会卡在执行上。",
+      state.answers.concern === "b"
+        ? "你最卡的就是人手和精力，这也是这次更偏向借助团队的关键原因。"
+        : state.answers.concern === "a"
+          ? "你当然也想快点看到结果，但如果没人持续盯执行，自己做反而容易边跑边掉速。"
+          : "链路复杂度对你来说不是完全不能做，而是当前不值得自己先从零试错。",
+      businessInsight
+    ].filter(Boolean).slice(0, 3);
+  }
+
+  return [
+    "这次更偏向内容和经营基础，不是单纯让你慢一点，而是你现在已经适合把整条找客链路一起考虑。",
+    state.answers.contentState === "c"
+      ? "你已经有一定内容能力或稳定投入条件，这说明你不必只停留在短期起量。"
+      : state.answers.contentState === "b"
+        ? "你已经有一些基础，下一步更重要的不是继续零散尝试，而是把这些动作稳定下来。"
+        : "虽然你现在基础还不算强，但从整体回答看，你已经意识到问题不只是缺线索，而是整套链路需要搭起来。",
+    state.answers.concern === "c"
+      ? "你最卡的就是内容、转化和经营动作还没串起来，所以判断自然会更偏向先把基础搭顺。"
+      : state.answers.concern === "a"
+        ? "你当然也需要结果，但如果只盯短期反馈，后面还是会反复回到基础没搭好的问题上。"
+        : "如果长期没人推进，这条路也会空转，所以后面最好尽快明确谁来持续做内容和经营动作。",
+    businessInsight
+  ].filter(Boolean).slice(0, 3);
+}
+
+function buildActionList(type) {
+  if (type === "ad") {
+    return [
+      state.answers.business === "online"
+        ? "先把咨询入口、留资方式和后续跟进话术整理清楚，再去测试第一轮动作。"
+        : state.answers.business === "offline"
+          ? "先按门店范围、服务半径和到店承接方式设计第一轮找客动作。"
+          : "先分清线上咨询和线下到店两个承接目标，别混在一起跑。",
+      "先用更直接的方式小范围验证，看哪些人群、素材和入口更容易带来有效咨询。",
+      "有第一轮有效反馈后，再决定是继续加量，还是补承接和转化环节。"
+    ];
+  }
+
+  if (type === "agency") {
+    return [
+      state.answers.business === "offline"
+        ? "先把门店可承接区域、接待方式和销售跟进流程整理给执行团队。"
+        : state.answers.business === "mixed"
+          ? "先把线上成交和线下到店两类目标拆开，让执行团队按不同口径推进。"
+          : "先把线索标准、预算范围和数据回传方式定清楚，再开始推进。",
+      "让专业团队负责执行和优化，你这边重点盯线索质量、跟进效率和实际成交情况。",
+      "先跑一轮标准化测试，再根据结果决定是不是继续放大。"
+    ];
+  }
+
+  return [
+    state.answers.business === "online"
+      ? "先把内容主题、咨询承接和私域后续动作连起来，别只做单条内容。"
+      : state.answers.business === "offline"
+        ? "先把门店内容、到店承接和后续转化流程串起来，再考虑怎么放大。"
+        : "先把线上内容、线下承接和后续跟进三件事分工清楚，再一起推进。",
+    "先用轻量内容验证哪些表达、案例和产品信息最能吸引目标客户。",
+    "等内容和承接稳定后，再配合投流去放大，而不是一开始就只追求起量。"
+  ];
+}
+
 function buildPersonalizedText(type) {
   const businessText = businessLabels[state.answers.business] || "生意形式待补充";
   const storeText = state.answers.stores ? `，目前是 ${storeLabels[state.answers.stores]}` : "";
@@ -359,7 +449,7 @@ function buildPersonalizedText(type) {
     content: "结合你的选择，你现阶段更适合先把内容、经营和后续放大动作串起来。"
   };
 
-  return `${typeLead[type]} 这次判断不只看你想怎么推进，也参考了你目前的内容基础和现实卡点。你目前是${businessText}${storeText}。${contentStateText}${participationText}${concernText}`;
+  return `${typeLead[type]} 这次判断主要参考了三件事：你目前是${businessText}${storeText}；${contentStateText}${participationText}${concernText}`;
 }
 
 function renderList(container, items) {
@@ -371,6 +461,8 @@ function renderResult() {
   const profile = resultProfiles[resultType];
   const score = computeMatchScore(resultType);
   const tagItems = [businessLabels[state.answers.business], profile.schemeLabel];
+  const analysisList = buildAnalysisList(resultType);
+  const actionItems = buildActionList(resultType);
 
   if (state.answers.stores) {
     tagItems.splice(1, 0, storeLabels[state.answers.stores]);
@@ -378,9 +470,9 @@ function renderResult() {
 
   resultTypeTitle.textContent = profile.title;
   resultScore.textContent = score;
-  resultSummaryText.textContent = profile.summary;
-  renderList(traitList, profile.traits);
-  renderList(actionList, profile.actions);
+  resultSummaryText.textContent = buildResultSummary(resultType);
+  renderList(traitList, analysisList);
+  renderList(actionList, actionItems);
   resultPersonalized.textContent = buildPersonalizedText(resultType);
   resultTags.innerHTML = tagItems.map((item) => `<span>${item}</span>`).join("");
 }
