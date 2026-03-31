@@ -25,23 +25,23 @@ const questionBank = [
   },
   {
     id: "participation",
-    title: "如果开始做这件事，您更希望自己参与到什么程度？",
+    title: "这件事谁来做，您更倾向哪种？",
     options: [
       {
         id: "a",
-        label: "主要由自己或团队来做",
+        label: "自己或内部团队来做，节奏自己把控",
         scores: { ad: 2 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "有专业团队一起做，关键环节一起定",
+        label: "和专业团队一起做，关键环节我来定",
         scores: { content: 2 },
         primary: "content"
       },
       {
         id: "c",
-        label: "更希望交给专业团队执行，自己配合就行",
+        label: "交给专业团队执行，我主要盯结果",
         scores: { agency: 2 },
         primary: "agency"
       }
@@ -49,23 +49,23 @@ const questionBank = [
   },
   {
     id: "contentState",
-    title: "从内容和经营基础看，您现在更接近哪种状态？",
+    title: "在微信做内容这件事（朋友圈、视频号等），您现在是什么情况？",
     options: [
       {
         id: "a",
-        label: "还没有稳定内容，也没人持续盯这件事",
+        label: "基本没做，也没人管这事",
         scores: { agency: 2, ad: 1 },
         primary: "agency"
       },
       {
         id: "b",
-        label: "能做一点，但还没形成稳定节奏",
+        label: "断断续续在发，但还没什么章法",
         scores: { ad: 1, agency: 1, content: 1 },
         primary: "ad"
       },
       {
         id: "c",
-        label: "已经有内容基础，或有人能持续做",
+        label: "一直在做，有人专门负责",
         scores: { content: 3 },
         primary: "content"
       }
@@ -77,20 +77,20 @@ const questionBank = [
     options: [
       {
         id: "a",
-        label: "先把第一批咨询和线索跑出来",
-        scores: { ad: 2 },
+        label: "没什么客户来问，第一批线索还没跑出来",
+        scores: { ad: 3 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "人手和精力不够，没人持续推进",
-        scores: { agency: 2 },
+        label: "想做但没人干，自己又忙不过来",
+        scores: { agency: 3 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "内容、转化和经营动作还没串起来",
-        scores: { content: 2 },
+        label: "零零散散都在做，但串不到一起去",
+        scores: { content: 3 },
         primary: "content"
       }
     ]
@@ -165,9 +165,9 @@ const resultProfiles = {
 };
 
 const loadingMessages = [
-  "正在匹配更适合你的找客路子",
-  "正在分析你的现状、内容基础和推进方式",
-  "马上生成基础结果"
+  "正在分析你的回答…",
+  "正在对比同行业常见的三种做法",
+  "马上告诉你更适合先走哪条路"
 ];
 
 const businessLabels = {
@@ -183,21 +183,21 @@ const storeLabels = {
 };
 
 const concernTexts = {
-  a: "你当前更想先把第一批咨询和线索跑出来。",
-  b: "你现在更受限于人手和精力，希望推进方式更省心。",
-  c: "你当前更卡在内容、转化和经营动作怎么配合起来。"
+  a: "你当前更想先把第一批客户咨询和线索跑出来。",
+  b: "你现在更卡在没人干、自己又忙不过来，希望推进方式更省心。",
+  c: "你当前更卡在各种动作零散、串不到一起去。"
 };
 
 const contentStateTexts = {
-  a: "目前内容基础还比较弱，短期更适合先选更轻或更省心的起步方式。",
-  b: "你不是完全没有基础，但暂时还不适合一上来把内容做得太重。",
-  c: "你已经具备一定内容能力，适合把内容经营和后续放大一起考虑。"
+  a: "目前微信内容基本没做，短期更适合先选更轻或更省心的起步方式。",
+  b: "内容断断续续在做但还没章法，暂时不适合一上来把内容做得太重。",
+  c: "你已经有人在持续做内容，适合把内容经营和后续放大一起考虑。"
 };
 
 const participationTexts = {
   a: "你更希望自己掌握推进节奏。",
-  b: "你更接受和专业团队一起推进，关键动作一起定。",
-  c: "你更希望把执行交给专业团队，自己重点看结果。"
+  b: "你更接受和专业团队一起推进，关键动作自己来定。",
+  c: "你更希望把执行交给专业团队，自己主要盯结果。"
 };
 
 const state = {
@@ -310,8 +310,8 @@ function resolveResultType() {
 }
 
 function computeMatchScore(type) {
-  const base = { ad: 80, agency: 81, content: 82 }[type] || 80;
-  const scoreBoost = state.scores[type] * 3;
+  const base = { ad: 78, agency: 79, content: 80 }[type] || 78;
+  const scoreBoost = Math.round(state.scores[type] * 2.2);
   const businessBoost = state.answers.business === "mixed" ? 2 : 1;
   const storeBoost = state.answers.stores === "large" ? 2 : state.answers.stores ? 1 : 0;
   return Math.min(base + scoreBoost + businessBoost + storeBoost, 96);
