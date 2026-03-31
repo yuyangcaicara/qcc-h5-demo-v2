@@ -1,23 +1,23 @@
 const questionBank = [
   {
     id: "goal",
-    title: "如果现在要开始找客户，您更接近哪种想法？",
+    title: "找客户这事，你打算先从哪一步开始？",
     options: [
       {
         id: "a",
-        label: "先尽快拿到一些客户线索，让生意跑起来",
+        label: "先投出去看效果，有线索再说",
         scores: { ad: 2 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "借助专业、可靠的团队推进，更省心、省力",
+        label: "先找个靠谱团队帮我跑",
         scores: { agency: 2 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "先把吸引客户、承接客户的基础打好，再慢慢放大",
+        label: "先把内容和承接做好，再往外推",
         scores: { content: 2 },
         primary: "content"
       }
@@ -25,7 +25,7 @@ const questionBank = [
   },
   {
     id: "participation",
-    title: "这件事谁来做，您更倾向哪种？",
+    title: "这事谁来干？",
     options: [
       {
         id: "a",
@@ -49,7 +49,7 @@ const questionBank = [
   },
   {
     id: "contentState",
-    title: "在微信做内容这件事（朋友圈、视频号等），您现在是什么情况？",
+    title: "朋友圈、视频号这些，你现在做得怎么样？",
     options: [
       {
         id: "a",
@@ -73,23 +73,23 @@ const questionBank = [
   },
   {
     id: "concern",
-    title: "按您现在的现状，最卡的是哪一步？",
+    title: "眼下最卡你的是什么？",
     options: [
       {
         id: "a",
-        label: "没什么客户来问，第一批线索还没跑出来",
+        label: "客户太少，第一批线索还没着落",
         scores: { ad: 3 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "想做但没人干，自己又忙不过来",
+        label: "不缺想法，缺的是能持续执行的人",
         scores: { agency: 3 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "零零散散都在做，但串不到一起去",
+        label: "人和动作都有，但不知道怎么配合出效果",
         scores: { content: 3 },
         primary: "content"
       }
@@ -97,7 +97,7 @@ const questionBank = [
   },
   {
     id: "business",
-    title: "您现在的生意形式，更接近哪一种？",
+    title: "你的生意主要在哪里做？",
     options: [
       {
         id: "online",
@@ -121,7 +121,7 @@ const questionBank = [
   },
   {
     id: "stores",
-    title: "您目前有几家门店？",
+    title: "目前几家店？",
     when: (answers) => answers.business && answers.business !== "online",
     options: [
       {
@@ -183,9 +183,9 @@ const storeLabels = {
 };
 
 const concernTexts = {
-  a: "你当前更想先把第一批客户咨询和线索跑出来。",
-  b: "你现在更卡在没人干、自己又忙不过来，希望推进方式更省心。",
-  c: "你当前更卡在各种动作零散、串不到一起去。"
+  a: "你当前最缺的是第一批客户线索。",
+  b: "你不缺想法，缺的是能持续执行的人。",
+  c: "人和动作都有，但还没配合出效果。"
 };
 
 const contentStateTexts = {
