@@ -1,5 +1,35 @@
 const questionBank = [
   {
+    id: "currentMethod",
+    title: "您现在主要靠什么方式找客户？",
+    options: [
+      {
+        id: "coldcall",
+        label: "打电话、加微信，一个一个联系",
+        scores: { ad: 2 },
+        primary: "ad"
+      },
+      {
+        id: "referral",
+        label: "靠老客户转介绍和熟人圈子",
+        scores: { ad: 1, agency: 1 },
+        primary: "ad"
+      },
+      {
+        id: "content",
+        label: "在朋友圈、视频号或其他平台发内容",
+        scores: { content: 2 },
+        primary: "content"
+      },
+      {
+        id: "ads",
+        label: "已经在做一些线上推广或投放",
+        scores: { agency: 1, content: 1 },
+        primary: "agency"
+      }
+    ]
+  },
+  {
     id: "goal",
     title: "对于生意获客，目前您最想优先做的是？",
     options: [
@@ -20,30 +50,6 @@ const questionBank = [
         label: "先把吸引客户、承接客户的基础打好，再慢慢放大",
         scores: { content: 2 },
         primary: "content"
-      }
-    ]
-  },
-  {
-    id: "participation",
-    title: "您最希望谁来负责在微信上获客？",
-    options: [
-      {
-        id: "a",
-        label: "自己或内部团队来做，节奏自己把控",
-        scores: { ad: 2 },
-        primary: "ad"
-      },
-      {
-        id: "b",
-        label: "和专业团队一起做，关键环节我来定",
-        scores: { content: 2 },
-        primary: "content"
-      },
-      {
-        id: "c",
-        label: "交给专业团队执行，我主要盯结果",
-        scores: { agency: 2 },
-        primary: "agency"
       }
     ]
   },
@@ -188,6 +194,13 @@ const storeLabels = {
   large: "6 家以上"
 };
 
+const currentMethodLabels = {
+  coldcall: "电话/加微信",
+  referral: "转介绍/熟人",
+  content: "内容获客",
+  ads: "线上推广"
+};
+
 const concernShorts = {
   a: "缺客户线索",
   b: "获客不稳定",
@@ -199,12 +212,6 @@ const contentStateShorts = {
   b: "内容未成体系",
   c: "其他平台有经营",
   d: "有人持续在做"
-};
-
-const participationShorts = {
-  a: "自己主导",
-  b: "协作推进",
-  c: "交给专业团队"
 };
 
 const state = {
@@ -298,8 +305,8 @@ function resolveResultType() {
   }
 
   const tieBreakOrder = [
+    state.answerPrimaries.currentMethod,
     state.answerPrimaries.goal,
-    state.answerPrimaries.participation,
     state.answerPrimaries.contentState,
     state.answerPrimaries.concern,
     state.answerPrimaries.business,
@@ -323,35 +330,47 @@ function computeMatchScore(type) {
   return Math.min(base + scoreBoost + businessBoost + storeBoost, 96);
 }
 
-function buildResultSummary(type) {
-  const summaries = {
-    ad: `您当前更像处在"先验证、先起量"的阶段——先把有效咨询和线索跑出来，再决定后面怎么放大。`,
-    agency: `您当前更需要解决"谁来稳定推进"——执行长期挂在自己身上，很多动作容易停在半路。`,
-    content: `您的问题不只是缺线索，更关键的是把吸引客户、承接客户和后续放大串成一条线。`
-  };
+function buildMethodComparison(type) {
+  const method = state.answers.currentMethod;
+  if (method === "coldcall") {
+    if (type === "ad") return "相比一个一个打电话，广告投放能让客户主动找上门，效率完全不在一个量级。";
+    if (type === "agency") return "相比自己打电话找客户，专业团队能帮您系统化获客，不再靠人力硬扛。";
+    return "打电话只能一对一，把内容和经营基础搭好后，一条内容可能带来一批客户。";
+  }
+  if (method === "referral") {
+    if (type === "ad") return "转介绍虽然精准但量有限，广告投放能帮您打开新客源，不再只等老客户介绍。";
+    if (type === "agency") return "转介绍量不稳定，让专业团队做投放可以持续补充新客源。";
+    return "转介绍加上内容经营，能让更多潜在客户主动关注您，不再只靠圈子。";
+  }
+  if (method === "content") {
+    if (type === "ad") return "内容获客见效慢，先用投放快速验证哪些客户愿意买单，再反哺内容方向。";
+    if (type === "agency") return "内容做得不错但转化不稳定，让团队帮您把投放和内容串起来。";
+    return "您已经有内容基础，下一步是把内容、承接和投放串成一套完整链路。";
+  }
+  if (method === "ads") {
+    if (type === "ad") return "已经在做推广，说明方向对。下一步是优化投放效率，让每一块钱花得更值。";
+    if (type === "agency") return "已经在做推广但效果不稳定，交给专业团队做精细化运营可能更合适。";
+    return "已经有投放基础，下一步是把内容经营和投放结合起来，降低长期获客成本。";
+  }
+  return "";
+}
 
-  return summaries[type];
+function buildResultSummary(type) {
+  return buildMethodComparison(type);
 }
 
 function buildBusinessInsight() {
   if (state.answers.business === "online") {
     return "线上经营，优先把咨询入口和承接跑顺。";
   }
-
   if (state.answers.business === "offline") {
-    if (state.answers.stores === "single") {
-      return "单店阶段，动作越清楚越容易持续。";
-    }
-    if (state.answers.stores === "small") {
-      return "多店阶段，更看重动作能不能复制。";
-    }
+    if (state.answers.stores === "single") return "单店阶段，动作越清楚越容易持续。";
+    if (state.answers.stores === "small") return "多店阶段，更看重动作能不能复制。";
     return "门店较多，需要兼顾短期线索和长期放大。";
   }
-
   if (state.answers.business === "mixed") {
     return "线上线下都在做，更看重整体承接能力。";
   }
-
   return "";
 }
 
@@ -369,11 +388,6 @@ function buildAnalysisList(type) {
           : cs === "c"
             ? "其他平台有经营基础，但微信获客需要先单独验证。"
             : "有内容基础，但眼下优先验证线索和转化效率。",
-      state.answers.concern === "a"
-        ? "最缺线索，先起量再优化。"
-        : state.answers.concern === "b"
-          ? "获客不稳定，先用最轻的方式验证。"
-          : "内容和获客还没串起来，先跑一条验证通路。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
@@ -388,11 +402,6 @@ function buildAnalysisList(type) {
           : cs === "c"
             ? "其他平台有基础，微信这块交给团队起步更快。"
             : "有基础但缺稳定推进机制，执行容易卡。",
-      state.answers.concern === "b"
-        ? "获客不稳定，正是借助团队的好时机。"
-        : state.answers.concern === "a"
-          ? "缺线索也缺人盯，自己做容易掉速。"
-          : "内容和获客要串起来，团队能帮您提效。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
@@ -406,11 +415,6 @@ function buildAnalysisList(type) {
         : cs === "b"
           ? "有一些基础，重点是把动作稳定下来。"
           : "基础虽弱，但问题不只是缺线索，链路需要搭起来。",
-    state.answers.concern === "c"
-      ? "内容和获客脱节，更适合先把基础搭顺。"
-      : state.answers.concern === "a"
-        ? "也需要线索，但只盯短期反馈后面还是会卡。"
-        : "获客不稳定，后面需要明确谁持续做内容和经营动作。",
     businessInsight
   ].filter(Boolean).slice(0, 3);
 }
@@ -471,13 +475,13 @@ function renderResult() {
 
   // 生意情况卡片
   const cards = [];
+  cards.push({ label: "当前获客方式", value: currentMethodLabels[state.answers.currentMethod] || "—" });
   cards.push({ label: "经营形式", value: businessLabels[state.answers.business] || "—" });
   if (state.answers.stores) {
     cards.push({ label: "门店规模", value: storeLabels[state.answers.stores] });
   }
   cards.push({ label: "内容现状", value: contentStateShorts[state.answers.contentState] || "—" });
   cards.push({ label: "最大卡点", value: concernShorts[state.answers.concern] || "—" });
-  cards.push({ label: "推进偏好", value: participationShorts[state.answers.participation] || "—" });
   cards.push({ label: "对应方案", value: profile.schemeLabel });
 
   situationCards.innerHTML = cards.map((c) =>
