@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>微信获客路径 H5 · 业务脑图</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Noto Sans SC", sans-serif;
+    background: #f7f8fa;
+    color: #1a1a2e;
+    padding: 32px 20px 60px;
+    min-height: 100vh;
+  }
+  .page-title {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 800;
+  }
+  .page-sub {
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 36px;
+  }
+  .map {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+  /* 主干线 */
+  .spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #1bbf83, #0f8d60);
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+  .node {
+    position: relative;
+    width: 47%;
+    margin-bottom: 28px;
+    padding: 18px 20px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .node.left { margin-right: auto; margin-left: 0; }
+  .node.right { margin-left: auto; margin-right: 0; }
+  .node.center {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .node.highlight {
+    background: linear-gradient(135deg, #eafff5, #fff);
+    border-color: rgba(27,191,131,0.2);
+  }
+  .node.result-ad { border-left: 4px solid #3b82f6; }
+  .node.result-agency { border-left: 4px solid #f59e0b; }
+  .node.result-content { border-left: 4px solid #10b981; }
+  /* 连接点 */
+  .node::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1bbf83;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #1bbf83;
+    z-index: 2;
+  }
+  .node.left::before { right: -32px; }
+  .node.right::before { left: -32px; }
+  .node.center::before { display: none; }
+  /* 连接线 */
+  .node::after {
+    content: "";
+    position: absolute;
+    top: 29px;
+    height: 2px;
+    background: #1bbf83;
+  }
+  .node.left::after { right: -26px; width: 26px; }
+  .node.right::after { left: -26px; width: 26px; }
+  .node.center::after { display: none; }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .tag-green { background: rgba(27,191,131,0.12); color: #0f8d60; }
+  .tag-blue { background: rgba(59,130,246,0.12); color: #2563eb; }
+  .tag-orange { background: rgba(245,158,11,0.12); color: #b45309; }
+  .tag-purple { background: rgba(139,92,246,0.12); color: #7c3aed; }
+  .tag-gray { background: rgba(0,0,0,0.06); color: #666; }
+  .node h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .node p, .node li {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+  }
+  .node ul {
+    padding-left: 16px;
+    margin-top: 6px;
+  }
+  .node li { margin-bottom: 3px; }
+  .option-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .opt {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #f7f8fa;
+    font-size: 12px;
+    color: #333;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .opt-tag {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(27,191,131,0.1);
+    color: #0f8d60;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .arrow-label {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    margin: -8px 0 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .result-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+    margin-bottom: 28px;
+  }
+  .result-card {
+    padding: 16px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  }
+  .result-card h4 {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .result-card .scheme {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .result-card p {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+  }
+  .rc-blue { border-top: 3px solid #3b82f6; }
+  .rc-orange { border-top: 3px solid #f59e0b; }
+  .rc-green { border-top: 3px solid #10b981; }
+  .section-divider {
+    text-align: center;
+    margin: 16px 0 20px;
+    font-size: 13px;
+    color: #aaa;
+    letter-spacing: 2px;
+  }
+  .flow-note {
+    max-width: 660px;
+    margin: 0 auto 24px;
+    padding: 14px 18px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px dashed rgba(27,191,131,0.3);
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+  }
+  @media(max-width:640px) {
+    .node { width: 80%; }
+    .node.left, .node.right { margin-left: 14%; }
+    .node.center { width: 80%; margin-left: 10%; }
+    .spine { left: 8%; }
+    .node.left::before, .node.right::before { left: -28px; right: auto; }
+    .node.left::after, .node.right::after { left: -22px; right: auto; width: 22px; }
+    .result-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">微信获客路径 H5 · 业务脑图</h1>
+<p class="page-sub">企查查号码包人群 · 互动投流试稿 · 2026.03.31</p>
+
+<div class="flow-note">
+  <strong>项目目标：</strong>通过互动 H5 投流给企查查号码包人群，用答题判断用户适合哪种微信获客路径，引导加顾问微信领取方案和同行案例。<br>
+  <strong>核心策略：</strong>从用户"现在怎么找客户"切入（而非直接推方案），让他先意识到效率问题，再自然引到三套方案分流。
+</div>
+
+<div class="map">
+  <div class="spine"></div>
+
+  <!-- 首页 -->
+  <div class="node center highlight">
+    <span class="tag tag-green">首页</span>
+    <h3>您现在找客户的方式，效率够高吗？</h3>
+    <p>同样是找客户，有人一个一个打电话，有人一天能收到几十条咨询。花 1 分钟看看更适合您的获客路径。</p>
+    <p style="margin-top:8px;font-weight:700;color:#0f8d60;">→ 按钮：开始分析</p>
+  </div>
+
+  <div class="section-divider">—— 答题阶段 ——</div>
+
+  <!-- Q1 -->
+  <div class="node left">
+    <span class="tag tag-purple">第 1 题 · 获客现状</span>
+    <h3>您现在主要靠什么方式找客户？</h3>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>打电话、加微信，一个一个联系</div>
+      <div class="opt"><span class="opt-tag">B</span>靠老客户转介绍和熟人圈子</div>
+      <div class="opt"><span class="opt-tag">C</span>在朋友圈、视频号或其他平台发内容</div>
+      <div class="opt"><span class="opt-tag">D</span>已经在做一些线上推广或投放</div>
+    </div>
+    <p style="margin-top:8px;font-size:11px;color:#999;">💡 作用：让用户代入现状，结果页会拿他的方式做对比</p>
+  </div>
+
+  <!-- Q2 -->
+  <div class="node right">
+    <span class="tag tag-purple">第 2 题 · 获客优先级</span>
+    <h3>对于生意获客，目前您最想优先做的是？</h3>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>尽快拿到一些客户线索，让生意先跑起来</div>
+      <div class="opt"><span class="opt-tag">B</span>借助专业团队来推进，更省心省力</div>
+      <div class="opt"><span class="opt-tag">C</span>先把内容和经营基础打好，慢慢推广放大</div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="node left">
+    <span class="tag tag-purple">第 3 题 · 内容能力</span>
+    <h3>您目前的内容能力怎么样？</h3>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>基本没有</div>
+      <div class="opt"><span class="opt-tag">B</span>有内容但没章法</div>
+      <div class="opt"><span class="opt-tag">C</span>有一定平台内容经验</div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="node right">
+    <span class="tag tag-purple">第 4 题 · 推进方式</span>
+    <h3>您最希望谁来负责在微信上获客？</h3>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>自己或内部团队来做，节奏自己把控</div>
+      <div class="opt"><span class="opt-tag">B</span>和专业团队一起做，关键环节我来定</div>
+      <div class="opt"><span class="opt-tag">C</span>交给专业团队执行，我主要盯结果</div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="node left">
+    <span class="tag tag-purple">第 5 题 · 经营形式</span>
+    <h3>您的生意主要在哪里做？</h3>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>线上经营为主</div>
+      <div class="opt"><span class="opt-tag">B</span>线下门店为主</div>
+      <div class="opt"><span class="opt-tag">C</span>线上和线下都在做</div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="node right">
+    <span class="tag tag-gray">第 6 题 · 条件题</span>
+    <h3>目前几家店？</h3>
+    <p style="font-size:12px;color:#999;margin-bottom:6px;">仅线下 / 混合经营时出现</p>
+    <div class="option-grid">
+      <div class="opt"><span class="opt-tag">A</span>1 家</div>
+      <div class="opt"><span class="opt-tag">B</span>2-5 家</div>
+      <div class="opt"><span class="opt-tag">C</span>6 家以上</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section-divider" style="margin-top:36px;">—— 分流结果 ——</div>
+
+<div class="flow-note">
+  <strong>分流逻辑：</strong>每道题的每个选项有对应的分值权重（ad / agency / content），答完后累加总分取最高。打平时按答题顺序取优先信号。<br>
+  <strong>第 1 题的特殊作用：</strong>不只参与分流计分，还决定结果页的"核心对比句"——拿用户现在的方式和推荐方式做直接对比。
+</div>
+
+<div style="max-width:900px;margin:0 auto;">
+  <div class="result-row">
+    <div class="result-card rc-blue">
+      <h4>直接起量型</h4>
+      <div class="scheme">→ 广告投放方案</div>
+      <p><strong>一句话：</strong>先快速验证，有线索再说。</p>
+      <p style="margin-top:6px;"><strong>典型用户：</strong>打电话找客户 + 想尽快有线索 + 没内容能力 + 想自己把控</p>
+      <p style="margin-top:6px;"><strong>对比句示例：</strong>"相比一个一个打电话，广告投放能让客户主动找上门。"</p>
+    </div>
+    <div class="result-card rc-orange">
+      <h4>专业代跑型</h4>
+      <div class="scheme">→ 专业代投方案</div>
+      <p><strong>一句话：</strong>自己扛执行容易断，交给团队更稳。</p>
+      <p style="margin-top:6px;"><strong>典型用户：</strong>转介绍为主 + 想省心 + 内容没章法 + 想交给团队</p>
+      <p style="margin-top:6px;"><strong>对比句示例：</strong>"转介绍量不稳定，让专业团队做投放可以持续补充新客源。"</p>
+    </div>
+    <div class="result-card rc-green">
+      <h4>经营放大型</h4>
+      <div class="scheme">→ 内容经营 + 投流方案</div>
+      <p><strong>一句话：</strong>先搭好基础，再配合投流放大。</p>
+      <p style="margin-top:6px;"><strong>典型用户：</strong>已在发内容 + 想打基础 + 有平台经验 + 想协作推进</p>
+      <p style="margin-top:6px;"><strong>对比句示例：</strong>"您已经有内容基础，下一步是把内容、承接和投放串成完整链路。"</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-divider">—— 结果页结构 ——</div>
+
+<div style="max-width:900px;margin:0 auto;">
+  <div class="flow-note">
+    <strong>S1</strong> 类型标题（直接起量型 / 专业代跑型 / 经营放大型）+ 匹配度分数<br>
+    <strong>↓ 核心对比句</strong>（基于第 1 题选的获客方式 × 结果类型，直接对比现有方式和推荐方式）<br>
+    <strong>S2</strong> 结合您的生意情况（卡片式：当前获客方式 / 经营形式 / 门店规模 / 内容能力 / 推进偏好 / 对应方案）<br>
+    <strong>S3</strong> 分析（2-3 条判断依据，按内容能力和经营形式动态组合）<br>
+    <strong>S4</strong> 怎么推进（3 条行动建议，第 1 条按经营形式变化）<br>
+    <strong>→</strong> 加顾问区：<strong>"看看同行怎么做的：花了多少、拿了多少线索、用了哪种方案"</strong>
+  </div>
+</div>
+
+<div class="section-divider">—— 转化闭环 ——</div>
+
+<div style="max-width:900px;margin:0 auto;">
+  <div class="flow-note" style="text-align:center;">
+    <strong style="font-size:15px;">信息流广告 → H5 首页 → 5-6 题答题 → 结果页（对比 + 分析 + 建议）→ 扫码加顾问 → 领取同行案例和详细方案</strong>
+    <p style="margin-top:10px;color:#999;font-size:12px;">目标人群：企查查号码包用户 · 正在用低效方式找客户的老板</p>
+  </div>
+</div>
+
+</body>
+</html>
