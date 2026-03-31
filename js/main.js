@@ -148,14 +148,17 @@ const questionBank = [
 
 const resultProfiles = {
   ad: {
+    shortLabel: "先直接起量",
     title: "你现阶段更适合：先直接把找客户这件事跑起来",
     schemeLabel: "纯广告投放方案"
   },
   agency: {
+    shortLabel: "先借助团队",
     title: "你现阶段更适合：先借助专业团队，把找客户这件事做起来",
     schemeLabel: "第三方线索代投方案"
   },
   content: {
+    shortLabel: "先打基础再放大",
     title: "你现阶段更适合：先把内容和经营基础做起来，再慢慢放大",
     schemeLabel: "内容加热 + 投流方案"
   }
@@ -219,6 +222,7 @@ const progressLabel = document.getElementById("progress-label");
 const progressPercent = document.getElementById("progress-percent");
 const progressFill = document.getElementById("progress-fill");
 const loadingText = document.getElementById("loading-text");
+const resultTypeShort = document.getElementById("result-type-short");
 const resultTypeTitle = document.getElementById("result-type-title");
 const resultScore = document.getElementById("result-score");
 const resultSummaryText = document.getElementById("result-summary-text");
@@ -468,6 +472,7 @@ function renderResult() {
     tagItems.splice(1, 0, storeLabels[state.answers.stores]);
   }
 
+  resultTypeShort.textContent = profile.shortLabel;
   resultTypeTitle.textContent = profile.title;
   resultScore.textContent = score;
   resultSummaryText.textContent = buildResultSummary(resultType);

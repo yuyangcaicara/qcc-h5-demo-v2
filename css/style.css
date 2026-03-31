@@ -433,6 +433,10 @@ button {
   gap: 14px;
 }
 
+.result-type-pill {
+  margin: 8px 0 12px;
+}
+
 .score-badge {
   min-width: 110px;
   padding: 16px 14px;
