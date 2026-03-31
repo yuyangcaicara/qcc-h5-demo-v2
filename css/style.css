@@ -433,6 +433,11 @@ button {
   gap: 14px;
 }
 
+.result-hero h2 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
 .result-type-pill {
   margin: 8px 0 12px;
 }
