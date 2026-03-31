@@ -82,11 +82,12 @@
         </section>
 
         <section id="screen-result" class="screen">
+          <!-- S1: 类型标题 -->
           <div class="result-hero reveal-up">
             <div>
               <p class="eyebrow">你的结果</p>
-              <span id="result-type-short" class="pill result-type-pill">先直接起量</span>
-              <h2 id="result-type-title">你现阶段更适合：先直接把找客户这件事跑起来</h2>
+              <h2 id="result-type-short" class="result-type-heading">直接起量型</h2>
+              <p id="result-type-title" class="result-subtitle"></p>
             </div>
             <div class="score-badge">
               <span>匹配度</span>
@@ -94,27 +95,26 @@
             </div>
           </div>
 
-          <div class="result-summary reveal-up delay-1">
-            <p id="result-summary-text"></p>
-            <div id="result-tags" class="chip-row result-tags"></div>
-          </div>
-
-          <div class="result-grid reveal-up delay-2">
-            <div class="result-card">
-              <p class="section-label">为什么会是这个结果</p>
-              <ul id="trait-list" class="bullet-list"></ul>
-            </div>
-            <div class="result-card">
-              <p class="section-label">更适合先怎么推进</p>
-              <ul id="action-list" class="bullet-list"></ul>
-            </div>
-          </div>
-
-          <div class="result-card highlight reveal-up delay-2">
+          <!-- S2: 结合你的生意情况（卡片式） -->
+          <div class="result-card reveal-up delay-1">
             <p class="section-label">结合你的生意情况</p>
-            <p id="result-personalized"></p>
+            <div id="situation-cards" class="situation-grid"></div>
           </div>
 
+          <!-- S3: 分析 -->
+          <div class="result-card reveal-up delay-2">
+            <p class="section-label">分析</p>
+            <p id="result-summary-text" class="analysis-text"></p>
+            <ul id="trait-list" class="bullet-list"></ul>
+          </div>
+
+          <!-- S4: 怎么推进 -->
+          <div class="result-card reveal-up delay-2">
+            <p class="section-label">怎么推进</p>
+            <ul id="action-list" class="bullet-list"></ul>
+          </div>
+
+          <!-- 加顾问 -->
           <div class="qr-card reveal-up delay-3">
             <div class="qr-copy">
               <span class="pill">想了解更多</span>

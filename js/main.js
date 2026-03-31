@@ -1,23 +1,23 @@
 const questionBank = [
   {
     id: "goal",
-    title: "找客户这事，你打算先从哪一步开始？",
+    title: "针对你的生意获客，目前最优先做的是？",
     options: [
       {
         id: "a",
-        label: "先投出去看效果，有线索再说",
+        label: "尽快拿到一些客户线索，让生意先跑起来",
         scores: { ad: 2 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "先找个靠谱团队帮我跑",
+        label: "借助专业团队来推进，更省心省力",
         scores: { agency: 2 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "先把内容和承接做好，再往外推",
+        label: "先把吸引客户、承接客户的基础打好，再慢慢放大",
         scores: { content: 2 },
         primary: "content"
       }
@@ -25,7 +25,7 @@ const questionBank = [
   },
   {
     id: "participation",
-    title: "这事谁来干？",
+    title: "如果开始做这件事，谁来负责？",
     options: [
       {
         id: "a",
@@ -73,7 +73,7 @@ const questionBank = [
   },
   {
     id: "concern",
-    title: "眼下最卡你的是什么？",
+    title: "当前生意上最卡你的是什么？",
     options: [
       {
         id: "a",
@@ -83,13 +83,13 @@ const questionBank = [
       },
       {
         id: "b",
-        label: "不缺想法，缺的是能持续执行的人",
+        label: "有获客想法，但不知道怎么落地执行",
         scores: { agency: 3 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "人和动作都有，但不知道怎么配合出效果",
+        label: "已经在做一些内容和运营，但不知道怎么持续出效果",
         scores: { content: 3 },
         primary: "content"
       }
@@ -184,8 +184,8 @@ const storeLabels = {
 
 const concernTexts = {
   a: "你当前最缺的是第一批客户线索。",
-  b: "你不缺想法，缺的是能持续执行的人。",
-  c: "人和动作都有，但还没配合出效果。"
+  b: "你有获客想法但还没找到落地执行的路子。",
+  c: "你已经在做内容和运营，但还没跑出持续效果。"
 };
 
 const contentStateTexts = {
@@ -228,8 +228,7 @@ const resultScore = document.getElementById("result-score");
 const resultSummaryText = document.getElementById("result-summary-text");
 const traitList = document.getElementById("trait-list");
 const actionList = document.getElementById("action-list");
-const resultTags = document.getElementById("result-tags");
-const resultPersonalized = document.getElementById("result-personalized");
+const situationCards = document.getElementById("situation-cards");
 
 function getActiveQuestions() {
   return questionBank.filter((question) => !question.when || question.when(state.answers));
@@ -464,13 +463,8 @@ function renderResult() {
   const resultType = resolveResultType();
   const profile = resultProfiles[resultType];
   const score = computeMatchScore(resultType);
-  const tagItems = [businessLabels[state.answers.business], profile.schemeLabel];
   const analysisList = buildAnalysisList(resultType);
   const actionItems = buildActionList(resultType);
-
-  if (state.answers.stores) {
-    tagItems.splice(1, 0, storeLabels[state.answers.stores]);
-  }
 
   resultTypeShort.textContent = profile.shortLabel;
   resultTypeTitle.textContent = profile.title;
@@ -478,8 +472,21 @@ function renderResult() {
   resultSummaryText.textContent = buildResultSummary(resultType);
   renderList(traitList, analysisList);
   renderList(actionList, actionItems);
-  resultPersonalized.textContent = buildPersonalizedText(resultType);
-  resultTags.innerHTML = tagItems.map((item) => `<span>${item}</span>`).join("");
+
+  // 生意情况卡片
+  const cards = [];
+  cards.push({ label: "生意形式", value: businessLabels[state.answers.business] || "—" });
+  if (state.answers.stores) {
+    cards.push({ label: "门店规模", value: storeLabels[state.answers.stores] });
+  }
+  cards.push({ label: "内容现状", value: contentStateTexts[state.answers.contentState] || "—" });
+  cards.push({ label: "当前卡点", value: concernTexts[state.answers.concern] || "—" });
+  cards.push({ label: "推进方式", value: participationTexts[state.answers.participation] || "—" });
+  cards.push({ label: "对应方案", value: profile.schemeLabel });
+
+  situationCards.innerHTML = cards.map((c) =>
+    `<div class="situation-item"><span class="sit-label">${c.label}</span><span class="sit-value">${c.value}</span></div>`
+  ).join("");
 }
 
 function startLoadingAndShowResult() {

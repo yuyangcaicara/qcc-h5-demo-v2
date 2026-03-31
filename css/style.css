@@ -438,6 +438,57 @@ button {
   font-weight: 700;
 }
 
+.result-type-heading {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--green-deep);
+  margin: 8px 0 4px;
+  line-height: 1.2;
+}
+
+.result-subtitle {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin: 4px 0 0;
+  line-height: 1.6;
+}
+
+.analysis-text {
+  font-size: 14px;
+  color: var(--text-soft);
+  line-height: 1.7;
+  margin: 10px 0 8px;
+}
+
+.situation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.situation-item {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(27, 191, 131, 0.06);
+  border: 1px solid rgba(27, 191, 131, 0.1);
+}
+
+.situation-item .sit-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: 6px;
+}
+
+.situation-item .sit-value {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+
 .result-type-pill {
   margin: 8px 0 12px;
 }
