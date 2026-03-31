@@ -47,63 +47,63 @@ const questionBank = [
       },
       {
         id: "c",
-        label: "先把吸引客户、承接客户的基础打好，再慢慢放大",
+        label: "先把内容和经营基础打好，慢慢推广放大",
         scores: { content: 2 },
         primary: "content"
       }
     ]
   },
   {
-    id: "contentState",
-    title: "朋友圈、视频号这些，您现在做得怎么样？",
+    id: "contentAbility",
+    title: "您目前的内容能力怎么样？",
     options: [
       {
-        id: "a",
-        label: "基本没做，也没人管这事",
-        scores: { agency: 2, ad: 1 },
-        primary: "agency"
-      },
-      {
-        id: "b",
-        label: "断断续续在发，但还没什么章法",
-        scores: { ad: 1, agency: 1, content: 1 },
+        id: "none",
+        label: "基本没有，也没人专门做内容",
+        scores: { ad: 2, agency: 1 },
         primary: "ad"
       },
       {
-        id: "c",
-        label: "还没开始做，但在其他平台（小红书/抖音）有经营",
+        id: "weak",
+        label: "偶尔发发朋友圈，但没什么章法",
+        scores: { ad: 1, agency: 1 },
+        primary: "agency"
+      },
+      {
+        id: "other",
+        label: "微信还没做，但在其他平台（小红书/抖音）有经验",
         scores: { content: 2, ad: 1 },
         primary: "content"
       },
       {
-        id: "d",
-        label: "一直在做，有人专门负责",
+        id: "strong",
+        label: "有人在持续做内容，或者自己比较擅长",
         scores: { content: 3 },
         primary: "content"
       }
     ]
   },
   {
-    id: "concern",
-    title: "当前生意获客上的最大卡点是？",
+    id: "participation",
+    title: "您最希望谁来负责在微信上获客？",
     options: [
       {
         id: "a",
-        label: "客户太少，第一批线索还没着落",
-        scores: { ad: 3 },
+        label: "自己或内部团队来做，节奏自己把控",
+        scores: { ad: 2 },
         primary: "ad"
       },
       {
         id: "b",
-        label: "客源不稳定，不知道怎么稳定获客",
-        scores: { agency: 3 },
-        primary: "agency"
+        label: "和专业团队一起做，关键环节我来定",
+        scores: { content: 2 },
+        primary: "content"
       },
       {
         id: "c",
-        label: "已经在做内容和运营，但不知道怎么和获客更有效地结合",
-        scores: { content: 3 },
-        primary: "content"
+        label: "交给专业团队执行，我主要盯结果",
+        scores: { agency: 2 },
+        primary: "agency"
       }
     ]
   },
@@ -207,11 +207,17 @@ const concernShorts = {
   c: "内容与获客脱节"
 };
 
-const contentStateShorts = {
-  a: "内容还没起步",
-  b: "内容未成体系",
-  c: "其他平台有经营",
-  d: "有人持续在做"
+const contentAbilityShorts = {
+  none: "没有内容能力",
+  weak: "内容未成体系",
+  other: "其他平台有经验",
+  strong: "有持续内容能力"
+};
+
+const participationShorts = {
+  a: "自己主导",
+  b: "协作推进",
+  c: "交给专业团队"
 };
 
 const state = {
@@ -307,8 +313,8 @@ function resolveResultType() {
   const tieBreakOrder = [
     state.answerPrimaries.currentMethod,
     state.answerPrimaries.goal,
-    state.answerPrimaries.contentState,
-    state.answerPrimaries.concern,
+    state.answerPrimaries.contentAbility,
+    state.answerPrimaries.participation,
     state.answerPrimaries.business,
     state.answerPrimaries.stores
   ];
@@ -376,18 +382,18 @@ function buildBusinessInsight() {
 
 function buildAnalysisList(type) {
   const businessInsight = buildBusinessInsight();
-  const cs = state.answers.contentState;
+  const ca = state.answers.contentAbility;
 
   if (type === "ad") {
     return [
       "当前更像先验证阶段，启动速度比完整打法更重要。",
-      cs === "a"
-        ? "内容还没起步，一上来做重容易散。"
-        : cs === "b"
-          ? "内容有一些但不稳，先把有效入口跑出来更实际。"
-          : cs === "c"
-            ? "其他平台有经营基础，但微信获客需要先单独验证。"
-            : "有内容基础，但眼下优先验证线索和转化效率。",
+      ca === "none"
+        ? "内容能力还没有，一上来做重容易散。"
+        : ca === "weak"
+          ? "内容有一些但不成体系，先把有效入口跑出来更实际。"
+          : ca === "other"
+            ? "其他平台有经验，但微信获客需要先单独验证。"
+            : "有内容能力，但眼下优先验证线索和转化效率。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
@@ -395,26 +401,26 @@ function buildAnalysisList(type) {
   if (type === "agency") {
     return [
       "核心不是您想不想做，而是自己扛执行容易断。",
-      cs === "a"
+      ca === "none"
         ? "内容和执行都不稳定，借助成熟团队更现实。"
-        : cs === "b"
+        : ca === "weak"
           ? "内部节奏还没稳，先让专业团队把动作带起来。"
-          : cs === "c"
-            ? "其他平台有基础，微信这块交给团队起步更快。"
-            : "有基础但缺稳定推进机制，执行容易卡。",
+          : ca === "other"
+            ? "其他平台有经验，微信这块交给团队起步更快。"
+            : "有能力但缺稳定推进机制，执行容易卡。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
 
   return [
     "您已经适合把整条获客链路一起考虑。",
-    cs === "d"
+    ca === "strong"
       ? "有内容能力，不必只停留在短期起量。"
-      : cs === "c"
-        ? "其他平台有经营基础，迁移到微信后可以一起放大。"
-        : cs === "b"
+      : ca === "other"
+        ? "其他平台有经验，迁移到微信后可以一起放大。"
+        : ca === "weak"
           ? "有一些基础，重点是把动作稳定下来。"
-          : "基础虽弱，但问题不只是缺线索，链路需要搭起来。",
+          : "内容能力还弱，但问题不只是缺线索，链路需要搭起来。",
     businessInsight
   ].filter(Boolean).slice(0, 3);
 }
@@ -480,8 +486,8 @@ function renderResult() {
   if (state.answers.stores) {
     cards.push({ label: "门店规模", value: storeLabels[state.answers.stores] });
   }
-  cards.push({ label: "内容现状", value: contentStateShorts[state.answers.contentState] || "—" });
-  cards.push({ label: "最大卡点", value: concernShorts[state.answers.concern] || "—" });
+  cards.push({ label: "内容能力", value: contentAbilityShorts[state.answers.contentAbility] || "—" });
+  cards.push({ label: "推进偏好", value: participationShorts[state.answers.participation] || "—" });
   cards.push({ label: "对应方案", value: profile.schemeLabel });
 
   situationCards.innerHTML = cards.map((c) =>
