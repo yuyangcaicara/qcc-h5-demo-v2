@@ -1,7 +1,7 @@
 const questionBank = [
   {
     id: "goal",
-    title: "针对您的生意获客，目前最优先做的是？",
+    title: "对于生意获客，目前您最想优先做的是？",
     options: [
       {
         id: "a",
@@ -65,6 +65,12 @@ const questionBank = [
       },
       {
         id: "c",
+        label: "还没开始做，但在其他平台（小红书/抖音）有经营",
+        scores: { content: 2, ad: 1 },
+        primary: "content"
+      },
+      {
+        id: "d",
         label: "一直在做，有人专门负责",
         scores: { content: 3 },
         primary: "content"
@@ -73,7 +79,7 @@ const questionBank = [
   },
   {
     id: "concern",
-    title: "当前生意上的最大卡点是？",
+    title: "当前生意获客上的最大卡点是？",
     options: [
       {
         id: "a",
@@ -83,13 +89,13 @@ const questionBank = [
       },
       {
         id: "b",
-        label: "客源不稳定，获客想法有但不知道怎么落地",
+        label: "客源不稳定，不知道怎么稳定获客",
         scores: { agency: 3 },
         primary: "agency"
       },
       {
         id: "c",
-        label: "已经在做内容和运营，但不知道怎么跟获客更有效地结合",
+        label: "已经在做内容和运营，但不知道怎么和获客更有效地结合",
         scores: { content: 3 },
         primary: "content"
       }
@@ -150,17 +156,17 @@ const resultProfiles = {
   ad: {
     shortLabel: "直接起量型",
     title: "您现阶段更适合先把找客户跑起来",
-    schemeLabel: "纯广告投放方案"
+    schemeLabel: "广告投放方案"
   },
   agency: {
     shortLabel: "专业代跑型",
     title: "您现阶段更适合让专业团队先帮您跑",
-    schemeLabel: "第三方线索代投方案"
+    schemeLabel: "专业代投方案"
   },
   content: {
-    shortLabel: "扎根放大型",
+    shortLabel: "经营放大型",
     title: "您现阶段更适合先搭好基础再放大",
-    schemeLabel: "内容加热 + 投流方案"
+    schemeLabel: "内容经营 + 投流方案"
   }
 };
 
@@ -184,20 +190,21 @@ const storeLabels = {
 
 const concernShorts = {
   a: "缺客户线索",
-  b: "获客难落地",
+  b: "获客不稳定",
   c: "内容与获客脱节"
 };
 
 const contentStateShorts = {
   a: "内容还没起步",
-  b: "内容不成体系",
-  c: "有人持续在做"
+  b: "内容未成体系",
+  c: "其他平台有经营",
+  d: "有人持续在做"
 };
 
 const participationShorts = {
   a: "自己主导",
   b: "协作推进",
-  c: "交给团队"
+  c: "交给专业团队"
 };
 
 const state = {
@@ -350,19 +357,22 @@ function buildBusinessInsight() {
 
 function buildAnalysisList(type) {
   const businessInsight = buildBusinessInsight();
+  const cs = state.answers.contentState;
 
   if (type === "ad") {
     return [
       "当前更像先验证阶段，启动速度比完整打法更重要。",
-      state.answers.contentState === "a"
+      cs === "a"
         ? "内容还没起步，一上来做重容易散。"
-        : state.answers.contentState === "b"
+        : cs === "b"
           ? "内容有一些但不稳，先把有效入口跑出来更实际。"
-          : "有内容基础，但眼下优先验证线索和转化效率。",
+          : cs === "c"
+            ? "其他平台有经营基础，但微信获客需要先单独验证。"
+            : "有内容基础，但眼下优先验证线索和转化效率。",
       state.answers.concern === "a"
         ? "最缺线索，先起量再优化。"
         : state.answers.concern === "b"
-          ? "获客想法有但难落地，先用最轻的方式验证。"
+          ? "获客不稳定，先用最轻的方式验证。"
           : "内容和获客还没串起来，先跑一条验证通路。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
@@ -371,13 +381,15 @@ function buildAnalysisList(type) {
   if (type === "agency") {
     return [
       "核心不是您想不想做，而是自己扛执行容易断。",
-      state.answers.contentState === "a"
+      cs === "a"
         ? "内容和执行都不稳定，借助成熟团队更现实。"
-        : state.answers.contentState === "b"
+        : cs === "b"
           ? "内部节奏还没稳，先让专业团队把动作带起来。"
-          : "有基础但缺稳定推进机制，执行容易卡。",
+          : cs === "c"
+            ? "其他平台有基础，微信这块交给团队起步更快。"
+            : "有基础但缺稳定推进机制，执行容易卡。",
       state.answers.concern === "b"
-        ? "获客想法难落地，正是借助团队的好时机。"
+        ? "获客不稳定，正是借助团队的好时机。"
         : state.answers.concern === "a"
           ? "缺线索也缺人盯，自己做容易掉速。"
           : "内容和获客要串起来，团队能帮您提效。",
@@ -387,16 +399,18 @@ function buildAnalysisList(type) {
 
   return [
     "您已经适合把整条获客链路一起考虑。",
-    state.answers.contentState === "c"
+    cs === "d"
       ? "有内容能力，不必只停留在短期起量。"
-      : state.answers.contentState === "b"
-        ? "有一些基础，重点是把动作稳定下来。"
-        : "基础虽弱，但问题不只是缺线索，链路需要搭起来。",
+      : cs === "c"
+        ? "其他平台有经营基础，迁移到微信后可以一起放大。"
+        : cs === "b"
+          ? "有一些基础，重点是把动作稳定下来。"
+          : "基础虽弱，但问题不只是缺线索，链路需要搭起来。",
     state.answers.concern === "c"
       ? "内容和获客脱节，更适合先把基础搭顺。"
       : state.answers.concern === "a"
         ? "也需要线索，但只盯短期反馈后面还是会卡。"
-        : "落地执行是问题，后面需要明确谁持续做内容。",
+        : "获客不稳定，后面需要明确谁持续做内容和经营动作。",
     businessInsight
   ].filter(Boolean).slice(0, 3);
 }
@@ -455,7 +469,7 @@ function renderResult() {
   renderList(traitList, analysisList);
   renderList(actionList, actionItems);
 
-  // 生意情况卡片（精简概括）
+  // 生意情况卡片
   const cards = [];
   cards.push({ label: "经营形式", value: businessLabels[state.answers.business] || "—" });
   if (state.answers.stores) {
