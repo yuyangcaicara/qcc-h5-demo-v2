@@ -59,25 +59,19 @@ const questionBank = [
     options: [
       {
         id: "none",
-        label: "基本没有，也没人专门做内容",
+        label: "基本没有",
         scores: { ad: 2, agency: 1 },
         primary: "ad"
       },
       {
         id: "weak",
-        label: "偶尔发发朋友圈，但没什么章法",
-        scores: { ad: 1, agency: 1 },
+        label: "有内容但没章法",
+        scores: { ad: 1, agency: 1, content: 1 },
         primary: "agency"
       },
       {
-        id: "other",
-        label: "微信还没做，但在其他平台（小红书/抖音）有经验",
-        scores: { content: 2, ad: 1 },
-        primary: "content"
-      },
-      {
-        id: "strong",
-        label: "有人在持续做内容，或者自己比较擅长",
+        id: "experienced",
+        label: "有一定平台内容经验",
         scores: { content: 3 },
         primary: "content"
       }
@@ -208,10 +202,9 @@ const concernShorts = {
 };
 
 const contentAbilityShorts = {
-  none: "没有内容能力",
-  weak: "内容未成体系",
-  other: "其他平台有经验",
-  strong: "有持续内容能力"
+  none: "基本没有",
+  weak: "有但没章法",
+  experienced: "有平台经验"
 };
 
 const participationShorts = {
@@ -390,10 +383,8 @@ function buildAnalysisList(type) {
       ca === "none"
         ? "内容能力还没有，一上来做重容易散。"
         : ca === "weak"
-          ? "内容有一些但不成体系，先把有效入口跑出来更实际。"
-          : ca === "other"
-            ? "其他平台有经验，但微信获客需要先单独验证。"
-            : "有内容能力，但眼下优先验证线索和转化效率。",
+          ? "有内容但不成体系，先把有效入口跑出来更实际。"
+          : "有平台经验，但眼下优先验证线索和转化效率。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
@@ -404,23 +395,19 @@ function buildAnalysisList(type) {
       ca === "none"
         ? "内容和执行都不稳定，借助成熟团队更现实。"
         : ca === "weak"
-          ? "内部节奏还没稳，先让专业团队把动作带起来。"
-          : ca === "other"
-            ? "其他平台有经验，微信这块交给团队起步更快。"
-            : "有能力但缺稳定推进机制，执行容易卡。",
+          ? "内容没章法，先让专业团队把动作带起来。"
+          : "有经验但缺稳定推进机制，交给团队起步更快。",
       businessInsight
     ].filter(Boolean).slice(0, 3);
   }
 
   return [
     "您已经适合把整条获客链路一起考虑。",
-    ca === "strong"
-      ? "有内容能力，不必只停留在短期起量。"
-      : ca === "other"
-        ? "其他平台有经验，迁移到微信后可以一起放大。"
-        : ca === "weak"
-          ? "有一些基础，重点是把动作稳定下来。"
-          : "内容能力还弱，但问题不只是缺线索，链路需要搭起来。",
+    ca === "experienced"
+      ? "有平台内容经验，迁移到微信后可以一起放大。"
+      : ca === "weak"
+        ? "有一些基础，重点是把动作稳定下来。"
+        : "内容能力还弱，但问题不只是缺线索，链路需要搭起来。",
     businessInsight
   ].filter(Boolean).slice(0, 3);
 }
